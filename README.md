@@ -1,0 +1,1 @@
+CGC is a simple conservative mark-and-sweep garbage collector for C. Note: CGC does not consider allocated blocks to be reachable from pointers in the data segment. This is because determining the bounds of the data segment is difficult to do in a portable manner. To avoid this problem, do not refer to CGC-allocated memory from globals.
