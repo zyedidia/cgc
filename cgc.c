@@ -52,12 +52,17 @@ void* cgc_calloc(cgc_t* gc, size_t num, size_t size) {
 }
 
 void* cgc_realloc(cgc_t* gc, void* ptr, size_t size) {
+    if (!ptr) {
+        return cgc_malloc(gc, size);
+    }
+
     hdr_t* oldh = (hdr_t*) ptr - 1;
+    ll_remove(gc, oldh);
     hdr_t* h = (hdr_t*) realloc(oldh, size + sizeof(hdr_t));
     if (!h) {
+        ll_insert(gc, oldh);
         return NULL;
     }
-    ll_remove(gc, oldh);
     h->sz = size;
     ll_insert(gc, h);
 
@@ -65,6 +70,10 @@ void* cgc_realloc(cgc_t* gc, void* ptr, size_t size) {
 }
 
 void cgc_free(cgc_t* gc, void* ptr) {
+    if (!ptr) {
+        return;
+    }
+
     hdr_t* h = (hdr_t*) ptr - 1;
     ll_remove(gc, h);
     free(h);
